@@ -32,7 +32,7 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     
     func add_msg(_ msg: String) {
         let a = Info.text.split(separator: "\n")
-        var index = a.count - 10
+        var index = a.count - 30
         if index < 0 {
             index = 0
         }
@@ -47,15 +47,26 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
 
     @IBAction func BeginTrack(_ sender: Any) {
         locationManager.startUpdatingLocation()
-        if let locationData = locationManager.location {
-            let locValue = locationData.coordinate
-            add_msg("l = \(locValue.latitude) \(locValue.longitude)")
-        }
+        locationManager.startUpdatingHeading()
     }
     
+    @IBAction func GetLocation(_ sender: Any) {
+        locationManager.requestLocation()
+    }
+    func printLocation(_ prefix: String, _ manager: CLLocationManager) {
+        if let loc = manager.location {
+            add_msg(prefix + "\(loc.coordinate.latitude) \(loc.coordinate.longitude)")
+            add_msg("  \(loc.altitude) \(loc.verticalAccuracy) \(loc.horizontalAccuracy)")
+        }
+        if let hdg = manager.heading {
+            add_msg("  \(Float(hdg.x)) \(Float(hdg.y)) \(Float(hdg.z))")
+        }
+    }
+    @IBAction func PrintLocation(_ sender: Any) {
+        printLocation("l = ", locationManager)
+    }
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        let locValue: CLLocationCoordinate2D = manager.location!.coordinate
-        add_msg("L = \(locValue.latitude) \(locValue.longitude)")
+        printLocation("L = ", manager)
     }
     
 }
