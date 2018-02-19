@@ -18,7 +18,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="Wnj-Dl-45x">
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="Wnj-Dl-45x">
                                 <rect key="frame" x="16" y="36" width="343" height="615"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5M6-Wa-238">
@@ -33,9 +33,9 @@
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uMw-oH-6ZQ">
                                                 <rect key="frame" x="114.5" y="0.0" width="114" height="32"/>
-                                                <state key="normal" title="Get"/>
+                                                <state key="normal" title="Zero"/>
                                                 <connections>
-                                                    <action selector="GetLocation:" destination="BYZ-38-t0r" eventType="touchUpInside" id="jS6-f5-J70"/>
+                                                    <action selector="ZeroSpeed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Pbt-0e-4xJ"/>
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zc3-i3-09H">
@@ -53,12 +53,48 @@
                                         </constraints>
                                     </stackView>
                                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xrd-Gw-rco">
-                                        <rect key="frame" x="0.0" y="48" width="343" height="567"/>
+                                        <rect key="frame" x="0.0" y="40" width="343" height="431"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="35"/>
                                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                     </textView>
+                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="-1.5" maxValue="1.5" translatesAutoresizingMaskIntoConstraints="NO" id="Xc3-k5-Qrg">
+                                        <rect key="frame" x="-2" y="479" width="347" height="17"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="16" id="8fG-8t-pyV"/>
+                                        </constraints>
+                                    </slider>
+                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="-1.5" maxValue="1.5" translatesAutoresizingMaskIntoConstraints="NO" id="oiH-64-ZmK">
+                                        <rect key="frame" x="-2" y="503" width="347" height="17"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="16" id="RFK-OB-3x0"/>
+                                        </constraints>
+                                    </slider>
+                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="-1.5" maxValue="1.5" translatesAutoresizingMaskIntoConstraints="NO" id="wWA-K4-5mR">
+                                        <rect key="frame" x="-2" y="527" width="347" height="17"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="16" id="kNC-fT-UAl"/>
+                                        </constraints>
+                                    </slider>
+                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="-1.5" maxValue="1.5" translatesAutoresizingMaskIntoConstraints="NO" id="ffC-9F-RwM">
+                                        <rect key="frame" x="-2" y="551" width="347" height="17"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="16" id="Q07-L0-1Ck"/>
+                                        </constraints>
+                                    </slider>
+                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="-1.5" maxValue="1.5" translatesAutoresizingMaskIntoConstraints="NO" id="XJ1-2S-cdk">
+                                        <rect key="frame" x="-2" y="575" width="347" height="17"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="16" id="DlM-cf-ckv"/>
+                                        </constraints>
+                                    </slider>
+                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="-1.5" maxValue="1.5" translatesAutoresizingMaskIntoConstraints="NO" id="dCX-ox-rgZ">
+                                        <rect key="frame" x="-2" y="599" width="347" height="17"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="16" id="Lzc-jf-hMj"/>
+                                        </constraints>
+                                    </slider>
                                 </subviews>
                             </stackView>
                         </subviews>
@@ -73,6 +109,12 @@
                     </view>
                     <connections>
                         <outlet property="Info" destination="Xrd-Gw-rco" id="dcT-Mr-yBa"/>
+                        <outlet property="S1" destination="Xc3-k5-Qrg" id="PYV-go-gtr"/>
+                        <outlet property="S2" destination="oiH-64-ZmK" id="y5q-DG-NZO"/>
+                        <outlet property="S3" destination="wWA-K4-5mR" id="mzT-kO-XxH"/>
+                        <outlet property="S4" destination="ffC-9F-RwM" id="dzl-3B-vGd"/>
+                        <outlet property="S5" destination="XJ1-2S-cdk" id="Q70-oG-fbc"/>
+                        <outlet property="S6" destination="dCX-ox-rgZ" id="urB-6d-VyM"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
