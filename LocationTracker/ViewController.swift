@@ -10,30 +10,37 @@ import UIKit
 import CoreMotion
 import CoreLocation
 
-class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDelegate {
+class ViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate, CLLocationManagerDelegate {
     let locationManager = CLLocationManager()
     let motionManager = CMMotionManager()
-    var delta_acceleration: [Double] = [0, 0, 0]
-    var cur_velocity: [Double] = [0, 0, 0]
-    var speed_history: [[Double]] = [[], []]
-    let interval = 0.2
+    var timer: Timer!
     
     @IBOutlet weak var Info: UITextView!
+    @IBOutlet weak var Interval_indicator: UILabel!
+    @IBOutlet weak var Interval: UIStepper!
     @IBOutlet weak var S1: UISlider!
     @IBOutlet weak var S2: UISlider!
     @IBOutlet weak var S3: UISlider!
-    @IBOutlet weak var S4: UISlider!
-    @IBOutlet weak var S5: UISlider!
-    @IBOutlet weak var S6: UISlider!
+    @IBOutlet weak var gps_lo: UILabel!
+    @IBOutlet weak var gps_la: UILabel!
+    @IBOutlet weak var gps_al: UILabel!
+    @IBOutlet weak var gps_he: UILabel!
+    @IBOutlet weak var gps_ac: UILabel!
+    @IBOutlet weak var gps_aa: UILabel!
+    @IBOutlet weak var gps_sp: UILabel!
+    @IBOutlet weak var gps_sp_kts: UILabel!
+    @IBOutlet weak var gps_sp_mph: UILabel!
+    @IBOutlet weak var gps_sp_kmph: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         self.locationManager.requestAlwaysAuthorization()
+        Info.delegate = self
         if CLLocationManager.locationServicesEnabled() {
             locationManager.delegate = self
             locationManager.desiredAccuracy = kCLLocationAccuracyBest
-            Info.text = "init\n";
+            Info.text = ""
         }
     }
 
@@ -42,6 +49,15 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         // Dispose of any resources that can be recreated.
     }
     
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if (text == "\n") {
+            textView.resignFirstResponder()
+            return false
+        }
+        return true
+    }
+    
+    /*
     func add_msg(_ msg: String) {
         let a = Info.text.split(separator: "\n")
         var index = a.count - 30
@@ -56,7 +72,7 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         c += msg + "\n"
         Info.text = c
     }
-    
+    */
     @objc func update() {
         printLocation("U = ", locationManager)
     }
@@ -64,44 +80,55 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     @IBAction func BeginTrack(_ sender: Any) {
         locationManager.startUpdatingLocation()
         // locationManager.startUpdatingHeading()
-        motionManager.startDeviceMotionUpdates()
-        motionManager.startAccelerometerUpdates()
-        _ = Timer.scheduledTimer(timeInterval: interval, target: self, selector: #selector(ViewController.update), userInfo: nil, repeats: true)
+        // motionManager.startDeviceMotionUpdates()
+        // motionManager.startAccelerometerUpdates()
+        let interval = Interval.value
+        if timer != nil {
+            timer.invalidate()
+        }
+        timer = Timer.scheduledTimer(timeInterval: interval, target: self, selector: #selector(ViewController.update), userInfo: nil, repeats: true)
     }
     
-    @IBAction func ZeroSpeed(_ sender: Any) {
-        cur_velocity = [0, 0, 0]
-        speed_history[1] = []
+    @IBAction func ClearInfo(_ sender: Any) {
+        UIPasteboard.general.string = Info.text
+        Info.text = ""
     }
+    
     func printLocation(_ prefix: String, _ manager: CLLocationManager) {
-        func mean(_ values: [Double], _ end: Int) -> Double {
-            var sum = 0.0
-            let real_end = min(end, values.count)
-            for i in 0...(real_end - 1) {
-                sum += values[i]
+        func log_data(_ name: String, _ txt_label: UILabel, _ value: Double, _ suffix: String = "") -> String {
+            var disp: String
+            var str: String
+            if name == "sp" {
+                if value < 0 {
+                    str = "null"
+                    disp = "null"
+                }
+                else {
+                    str = "\(value)"
+                    disp = String(format: "%.1f", value)
+                }
             }
-            return sum / Double(real_end)
-        }
-        func log_speed(_ index: Int, _ value: Double) {
-            speed_history[index].insert(value, at: 0)
-            if speed_history.count > Int(15.0 / interval) {
-                speed_history[index].removeLast()
+            else if name == "he" {
+                if value < 0 {
+                    str = "null"
+                    disp = "null"
+                }
+                else {
+                    str = "\(value)"
+                    disp = String(format: "%.1f", value)
+                }
             }
-            let m1 = String(format: "% 8.1f", mean(speed_history[index], 1) * 2.23693629)
-            let m5 = String(format: "% 8.1f", mean(speed_history[index], 5) * 2.23693629)
-            let m15 = String(format: "% 8.1f", mean(speed_history[index], 15) * 2.23693629)
-            add_msg("\(m1)\t\(m5)\t\(m15)")
-            // return [mean(speed_history[index][..<Int(1 / interval)]), mean(speed_history[index][..<Int(5 / interval)]), mean(speed_history[index][..<Int(15 / interval)])]
+            else {
+                str = "\(value)"
+                disp = "\(value)"
+            }
+            txt_label.text = disp + suffix
+            return ",\(name):\(str)"
         }
         func assign_value(_ set: Int, _ a: Double, _ b: Double, _ c: Double) {
-            var A: UISlider = S1
-            var B: UISlider = S2
-            var C: UISlider = S3
-            if set == 1 {
-                A = S4
-                B = S5
-                C = S6
-            }
+            let A: UISlider = S1
+            let B: UISlider = S2
+            let C: UISlider = S3
             A.value = Float(a)
             B.value = Float(b)
             C.value = Float(c)
@@ -110,8 +137,18 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
             // add_msg(prefix + "\(loc.coordinate.latitude) \(loc.coordinate.longitude)")
             // add_msg("  \(loc.altitude) \(loc.verticalAccuracy) \(loc.horizontalAccuracy)")
             // add_msg("  \(loc.speed) \(loc.course)")
-            let gps_speed = loc.speed
-            log_speed(0, gps_speed)
+            var log_line = "t:\(Int(Date().timeIntervalSince1970 * 1000))"
+            log_line += log_data("la", gps_la,      loc.coordinate.latitude)
+            log_line += log_data("lo", gps_lo,      loc.coordinate.longitude)
+            log_line += log_data("al", gps_al,      loc.altitude)
+            log_line += log_data("ac", gps_ac,      loc.horizontalAccuracy)
+            log_line += log_data("aa", gps_aa,      loc.verticalAccuracy)
+            log_line += log_data("he", gps_he,      loc.course,             " deg")
+            log_line += log_data("sp", gps_sp,      loc.speed,              " m/s")
+            _         = log_data("sp", gps_sp_kts,  loc.speed * 1.94384449, " kts")
+            _         = log_data("sp", gps_sp_mph,  loc.speed * 2.23693629, " mph")
+            _         = log_data("sp", gps_sp_kmph, loc.speed * 3.6,        " km/h")
+            Info.text! = Info.text! + log_line + "\n"
         }
         /*
         if let hdg = manager.heading {
@@ -123,8 +160,9 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
             // add_msg(" \(Float(dm.gravity.x)) \(Float(dm.gravity.y)) \(Float(dm.gravity.z))")
             // add_msg(" \(Float(dm.attitude.roll))\t\(Float(dm.attitude.pitch))\t\(Float(dm.attitude.yaw))")
             // add_msg(" \(Float(dm.rotationRate.x))\t\(Float(dm.rotationRate.y))\t\(Float(dm.rotationRate.z))")
-            // assign_value(0, dm.attitude.pitch / Double.pi, dm.attitude.roll / Double.pi, dm.attitude.yaw / Double.pi)
+            assign_value(0, dm.attitude.pitch / Double.pi, dm.attitude.roll / Double.pi, dm.attitude.yaw / Double.pi)
             // assign_value(1, dm.rotationRate.x, dm.rotationRate.y, dm.rotationRate.z)
+            /*
             let r = dm.attitude.roll
             let p = dm.attitude.pitch
             let y = dm.attitude.yaw
@@ -140,8 +178,9 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
             assign_value(1, gnd_acceleration[0], gnd_acceleration[1], gnd_acceleration[2])
             let inertial_speed = sqrt(cur_velocity[0]*cur_velocity[0] + cur_velocity[1]*cur_velocity[1] + cur_velocity[2]*cur_velocity[2])
             log_speed(1, inertial_speed)
+            */
         }
-        add_msg(" ")
+        // add_msg(" ")
         /*
             W   S   U
             1   0   0   x
@@ -172,11 +211,25 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
          b' = (b/r * cos(y) + a/r * sin(y)) * r = b * cos(y) + a * sin(y)
          */
     }
-    @IBAction func PrintLocation(_ sender: Any) {
-        printLocation("l = ", locationManager)
+    @IBAction func StopTimer(_ sender: Any) {
+        if timer != nil {
+            timer.invalidate()
+            timer = nil
+        }
+    }
+    @IBAction func Attitude_switched(_ sender: UISwitch) {
+        if sender.isOn {
+            motionManager.startDeviceMotionUpdates()
+        }
+        else {
+            motionManager.stopDeviceMotionUpdates()
+        }
+    }
+    @IBAction func Interval_changed(_ sender: UIStepper) {
+        Interval_indicator.text = String(format: "%.1f", sender.value)
     }
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        printLocation("L = ", manager)
+        // printLocation("L = ", manager)
     }
     
 }
