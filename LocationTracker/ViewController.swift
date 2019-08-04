@@ -148,7 +148,20 @@ class ViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate,
             _         = log_data("sp", gps_sp_kts,  loc.speed * 1.94384449, " kts")
             _         = log_data("sp", gps_sp_mph,  loc.speed * 2.23693629, " mph")
             _         = log_data("sp", gps_sp_kmph, loc.speed * 3.6,        " km/h")
-            Info.text! = Info.text! + log_line + "\n"
+            log_line += "\n"
+            Info.text! = Info.text! + log_line
+            var file_name = "\(Int(Date().timeIntervalSince1970 / 1000)).txt"
+            let fileURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(file_name)
+            if let outputStream = OutputStream(url: fileURL, append: true) {
+                outputStream.open()
+                let bytesWritten = outputStream.write(log_line, maxLength: log_line.count)
+                if bytesWritten < 0 {
+                    Info.text! = Info.text! + "WRITE FAILED 1!\n"
+                }
+                outputStream.close()
+            } else {
+                Info.text! = Info.text! + "WRITE FAILED 2!\n"
+            }
         }
         /*
         if let hdg = manager.heading {
