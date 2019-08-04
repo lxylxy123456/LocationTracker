@@ -31,6 +31,9 @@ class ViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate,
     @IBOutlet weak var gps_sp_kts: UILabel!
     @IBOutlet weak var gps_sp_mph: UILabel!
     @IBOutlet weak var gps_sp_kmph: UILabel!
+    @IBOutlet weak var gps_lo_ori: UILabel!
+    @IBOutlet weak var gps_la_ori: UILabel!
+    @IBOutlet weak var gps_al_ori: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -118,6 +121,35 @@ class ViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate,
                     disp = String(format: "%.1f", value)
                 }
             }
+            else if name == "AL" {
+                str = "\(value)"
+                disp = String(format: "%.1f", value)
+            }
+            else if name == "LA" || name == "LO" {
+                str = "\(value)"
+                var sgn: String
+                var pos_value: Double
+                if (value < 0) {
+                    sgn = "-"
+                    pos_value = -value
+                } else {
+                    sgn = ""
+                    pos_value = value
+                }
+                let deg = Int(pos_value)
+                pos_value -= Double(deg)
+                pos_value *= 60.0
+                let min = Int(pos_value)
+                pos_value -= Double(min)
+                pos_value *= 60.0
+                let sec = Int(pos_value)
+                pos_value -= Double(sec)
+                disp = sgn + String(format: "%02d°%02d'%02d''", deg, min, sec)
+                let point = String(format: "%f", pos_value)
+                if let point_index = point.index(of: ".") {
+                    disp += point[point_index..<point.endIndex]
+                }
+            }
             else {
                 str = "\(value)"
                 disp = "\(value)"
@@ -138,8 +170,8 @@ class ViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate,
             // add_msg("  \(loc.altitude) \(loc.verticalAccuracy) \(loc.horizontalAccuracy)")
             // add_msg("  \(loc.speed) \(loc.course)")
             var log_line = "t:\(Int(Date().timeIntervalSince1970 * 1000))"
-            log_line += log_data("la", gps_la,      loc.coordinate.latitude)
-            log_line += log_data("lo", gps_lo,      loc.coordinate.longitude)
+            log_line += log_data("la", gps_la_ori,  loc.coordinate.latitude)
+            log_line += log_data("lo", gps_lo_ori,  loc.coordinate.longitude)
             log_line += log_data("al", gps_al,      loc.altitude)
             log_line += log_data("ac", gps_ac,      loc.horizontalAccuracy)
             log_line += log_data("aa", gps_aa,      loc.verticalAccuracy)
@@ -148,9 +180,12 @@ class ViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate,
             _         = log_data("sp", gps_sp_kts,  loc.speed * 1.94384449, " kts")
             _         = log_data("sp", gps_sp_mph,  loc.speed * 2.23693629, " mph")
             _         = log_data("sp", gps_sp_kmph, loc.speed * 3.6,        " km/h")
+            _         = log_data("LA", gps_la,      loc.coordinate.latitude)
+            _         = log_data("LO", gps_lo,      loc.coordinate.longitude)
+            _         = log_data("AL", gps_al_ori,  loc.altitude / 0.3048,  " ft")
             log_line += "\n"
             Info.text! = Info.text! + log_line
-            var file_name = "\(Int(Date().timeIntervalSince1970 / 1000)).txt"
+            let file_name = "\(Int(Date().timeIntervalSince1970 / 1000)).txt"
             let fileURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(file_name)
             if let outputStream = OutputStream(url: fileURL, append: true) {
                 outputStream.open()
