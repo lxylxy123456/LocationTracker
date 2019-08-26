@@ -90,6 +90,7 @@ class ViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate,
             timer.invalidate()
         }
         timer = Timer.scheduledTimer(timeInterval: interval, target: self, selector: #selector(ViewController.update), userInfo: nil, repeats: true)
+        UIApplication.shared.isIdleTimerDisabled = true
     }
     
     @IBAction func ClearInfo(_ sender: Any) {
@@ -264,6 +265,7 @@ class ViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate,
             timer.invalidate()
             timer = nil
         }
+        UIApplication.shared.isIdleTimerDisabled = false
     }
     @IBAction func Attitude_switched(_ sender: UISwitch) {
         if sender.isOn {
